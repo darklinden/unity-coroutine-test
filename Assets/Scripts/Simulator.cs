@@ -7,7 +7,7 @@ using System.Diagnostics;
 public class Simulator : IDisposable
 {
     private int RoutineTimeFrame = 10;
-    private int RoutineCheckCount = 50;
+    private int RoutineCheckCount = 200;
 
     public void Dispose()
     {
@@ -20,7 +20,7 @@ public class Simulator : IDisposable
         if (counter++ > RoutineCheckCount)
         {
             counter = 0;
-            if (stopwatch.ElapsedMilliseconds > 10)
+            if (stopwatch.ElapsedMilliseconds > RoutineTimeFrame)
             {
                 return true;
             }
@@ -40,17 +40,14 @@ public class Simulator : IDisposable
             stopwatch.Start();
         }
 
-        for (int i = int.MinValue; i < int.MaxValue; i++)
+        for (int i = 0; i < int.MaxValue; i++)
         {
-            for (int j = int.MinValue; j < int.MaxValue; j++)
+            // if stopwatch spend too long, yield return
+            if (yieldOnSpendTimeTooLong && StopwatchIncreaseChecker(stopwatch, ref counter))
             {
-                // if stopwatch spend too long, yield return
-                if (yieldOnSpendTimeTooLong && StopwatchIncreaseChecker(stopwatch, ref counter))
-                {
-                    yield return null;
-                    stopwatch.Reset();
-                    stopwatch.Start();
-                }
+                yield return null;
+                stopwatch.Reset();
+                stopwatch.Start();
             }
         }
 

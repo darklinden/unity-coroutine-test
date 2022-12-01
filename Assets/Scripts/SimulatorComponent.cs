@@ -46,12 +46,17 @@ public class SimulatorComponent : MonoBehaviour
             {
                 m_IsCalculating = true;
 
+                var tick = DateTime.UtcNow.Ticks;
+                UnityEngine.Debug.Log("Start Regenerate FlowField");
                 yield return flowField.Generate(stopwatch, true);
-                // var gen = flowField.Generate(stopwatch, true);
-                // while (gen.MoveNext())
-                // {
-                //     yield return gen.Current;
-                // }
+                var tick2 = DateTime.UtcNow.Ticks;
+                UnityEngine.Debug.Log("End Regenerate FlowField " + (tick2 - tick) / 10000f);
+
+                tick = tick2;
+                UnityEngine.Debug.Log("Start Regenerate FlowField No Yield");
+                yield return flowField.Generate(stopwatch, false);
+                tick2 = DateTime.UtcNow.Ticks;
+                UnityEngine.Debug.Log("End Regenerate FlowField No Yield " + (tick2 - tick) / 10000f);
 
                 m_IsCalculating = false;
 
